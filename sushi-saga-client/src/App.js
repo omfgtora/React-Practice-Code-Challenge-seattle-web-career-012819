@@ -16,36 +16,44 @@ class App extends Component {
 
   }
 
+componentDidMount() {
+  this.getSushi();
+  }
+
+  addEaten = (data) => {
+    const newData = data.map(item => {
+      // return {...i, isEaten: false}
+      Object.assign(item, {isEaten: false})
+      return item
+    })
+    return newData;
+  }
+
   getSushi = () => {
-    return fetch(API).then(response => response.json())
-      .then(json => {
-        this.setState({
-          sushi: json
+    fetch(API).then(response => response.json())
+    .then(json => this.addEaten(json))
+    .then(data => {
+      this.setState({
+          sushi: data
         })
       })
-  }
-
-  logEatenStatus = () => {
-    console.log('eaten status fired!', this.state.sushi)
-    let eatenAdded = this.state.sushi.map(sus => {
-      return sus.isEaten = false;
-    })
-    console.log(eatenAdded);
-    return this.setState({
-      sushi: eatenAdded
-    })
-  }
-
-  componentDidMount() {
-    this.getSushi()
-    .then(this.logEatenStatus())
+    }
     
+  updateEaten = (sushi) => {
+    const updatedArray = this.state.sushi.map(item => {
+      if (item.id === sushi.id) {
+        item.isEaten = true
+      }
+      return item
+    })
+    this.setState({sushi: updatedArray})
   }
 
-  bill = (price) => {
-    let newMoney = this.state.money -= price
-    this.setState({money: newMoney})
-    console.log('Charged', price)
+  bill = (sushi) => {
+    if (!sushi.isEaten) {
+      let newMoney = this.state.money -= sushi.price
+      this.setState({money: newMoney})
+    }
   }
 
   getSushiSet = () => {
@@ -60,7 +68,7 @@ class App extends Component {
   render() {
     return (
       <div className="app">
-        <SushiContainer getSushiSet={this.getSushiSet} bill={this.bill} moreSushi={this.moreSushi} />
+        <SushiContainer getSushiSet={this.getSushiSet} bill={this.bill} moreSushi={this.moreSushi} updateEaten={this.updateEaten} />
         <Table money={this.state.money} />
       </div>
     );

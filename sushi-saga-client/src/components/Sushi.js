@@ -1,19 +1,24 @@
 import React, { Fragment } from 'react'
 
 const Sushi = (props) => {
-  const isEaten = () => {
-    if (false) {
-      return console.log('Eated')
+  const checkEaten = () => {
+    if (props.sushi.isEaten) {
+      return null
     } else {
       return <img src={props.sushi.img_url} width="100%" />
     }
   }
 
+  const handleClick = () => {
+    props.bill(props.sushi)
+    props.updateEaten(props.sushi)
+  }
+
   return (
     <div className="sushi">
       <div className="plate" 
-           onClick={(event)=> {props.bill(props.sushi.price)}}>
-        {isEaten()}
+           onClick={handleClick}>
+        {checkEaten()}
       </div>
       <h4 className="sushi-details">
         {props.sushi.name} - ${props.sushi.price}
